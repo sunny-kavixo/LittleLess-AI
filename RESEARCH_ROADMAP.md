@@ -4,13 +4,13 @@
 
 | Priority | Workstream | Acceptance criterion | Status |
 |---|---|---|---|
-| P0 | Recover and audit Phase 4.0 Python/native crash | Identify affected process, exit reason, data integrity, and safe rerun path | Open |
-| P0 | Independent Phase 3.9 reproduction | Rebuild native library, run safety tests, inspect file I/O, compare output and memory | Open |
+| P0 | Phase 4.0 crash root-cause follow-up | Local diagnosis points to ad-hoc `ctypes` pointer truncation; add typed FFI wrapper and sanitizer checks | Diagnosed locally; hardening open |
+| P0 | Independent Phase 3.9 reproduction | Local audit reported PASS for file I/O, CRC, lifecycle and output; publish scripts and repeat externally | Local PASS; public reproduction open |
 | P0 | Public reproducibility package | Review and publish permitted source, test scripts, dataset instructions, hashes, and raw evidence | Open |
 | P1 | End-to-end memory accounting | Report native allocations, KV cache, peak RSS, and OS file-cache effects separately | Open |
-| P1 | Compressed file-backed streaming | Test chunked entropy coding with bounded decompression and direct seeking | Planned |
-| P1 | KV-cache compression | Measure accuracy, context scaling, memory, and latency on controlled tasks | Planned |
-| P1 | Mathematical invention track | Three falsifiable distinct hypotheses with prior-art checks and ablations | Planned |
+| P1 | Compressed file-backed streaming | Phase 4.0 chunked DEFLATE implemented locally; optimize decode overhead and compare against alternatives | Experimental result; speed optimization open |
+| P1 | KV-cache compression | Phase 4.0 dynamic Int8 KV measured at T=128; validate incremental semantics, longer contexts and real tasks | Experimental result; scaling open |
+| P1 | Mathematical invention track | Three proposals recorded; low-rank residual hypothesis not yet implemented; novelty requires prior-art and ablations | In progress |
 | P2 | Larger model transfer | Reproduce benefits on progressively larger, licensed models | Planned |
 | P2 | External baseline comparison | Matched LittleBit/LittleBit-2 and conventional baselines; no unsupported claims | Planned |
 
