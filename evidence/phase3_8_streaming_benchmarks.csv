@@ -1,0 +1,16 @@
+candidate_id,model,engine_type,stream_level,pack_mode,artifact_bytes,cold_start_ms,active_weight_ram_bytes,scratchpad_bytes,kv_cache_32_bytes,kv_cache_128_bytes,peak_rss_mb,test_ppl,test_ce,prefill_p50_ms,decode_p50_us,throughput_tok_s,exact_match
+C0_Static_2B,C0,static,Static,2-Bit,557097,12.35,680712,0,163840,655360,283.23,6.4954,1.8711,1.08,309.5,3231.0,True
+C0_Static_R3,C0,static,Static,Radix-3,553706,10.98,570140,0,163840,655360,393.56,6.4954,1.8711,2.53,650.0,1538.5,True
+S1_Static_2B,S1,static,Static,2-Bit,439146,11.76,680712,0,163840,655360,393.56,7.1464,1.9666,1.35,324.1,3085.5,True
+S1_Static_R3,S1,static,Static,Radix-3,429163,14.12,570140,0,163840,655360,393.56,7.1464,1.9666,2.99,648.5,1542.1,True
+C0_Stream_Block_2B,C0,streaming,Block,2-Bit,557097,12.89,260864,133120,163840,655360,393.56,6.4954,1.8711,1.22,342.1,2923.0,True
+C0_Stream_Block_R3,C0,streaming,Block,Radix-3,553706,11.61,234432,106688,163840,655360,393.56,6.4954,1.8711,2.96,675.1,1481.3,True
+S1_Stream_Block_2B,S1,streaming,Block,2-Bit,439146,16.63,260864,133120,163840,655360,393.56,7.1464,1.9666,1.36,334.1,2992.8,True
+S1_Stream_Block_R3,S1,streaming,Block,Radix-3,429163,11.11,234432,106688,163840,655360,393.56,7.1464,1.9666,2.25,642.6,1556.2,True
+C0_Stream_Layer_2B,C0,streaming,Layer,2-Bit,557097,22.01,168704,40960,163840,655360,393.56,6.4954,1.8711,1.47,360.4,2775.0,True
+C0_Stream_Layer_R3,C0,streaming,Layer,Radix-3,553706,9.58,160704,32960,163840,655360,393.56,6.4954,1.8711,2.56,675.7,1479.9,True
+S1_Stream_Layer_2B,S1,streaming,Layer,2-Bit,439146,12.63,168704,40960,163840,655360,393.56,7.1464,1.9666,1.03,246.1,4063.9,True
+S1_Stream_Layer_R3,S1,streaming,Layer,Radix-3,429163,11.59,160704,32960,163840,655360,393.56,7.1464,1.9666,2.35,621.8,1608.3,True
+S1_Stream_Layer_R3_s42,S1,streaming,Layer,Radix-3,429020,0.00,160704,32960,163840,655360,393.56,7.1464,1.9666,2.71,647.2,1545.1,True
+S1_Stream_Layer_R3_s1337,S1,streaming,Layer,Radix-3,429020,0.00,160704,32960,163840,655360,393.56,7.1464,1.9666,3.03,680.6,1469.3,True
+S1_Stream_Layer_R3_s2026,S1,streaming,Layer,Radix-3,429020,0.00,160704,32960,163840,655360,393.56,7.1464,1.9666,2.02,501.1,1995.5,True

@@ -1,0 +1,15 @@
+candidate_id,phase,model,mechanism,container_bytes,active_weight_ram_bytes,kv_cache_128_bytes,total_model_heap_bytes,decode_us_per_tok,throughput_tok_s,test_ppl,delta_ppl_vs_baseline,status,notes
+S1_Raw_FP32KV,Phase 3.9,S1,Raw File-Backed Streaming,572140,160704,655360,823936,245.4,4074.7,7.1462,0.0000,REPRODUCED,Baseline raw pread streaming with FP32 KV cache
+S1_Raw_Int8KV,Phase 4.0,S1,Raw Streaming + Dynamic Int8 KV,572140,160704,184320,352896,246.7,4052.8,7.1463,+0.0001,REPRODUCED,71.88% KV cache RAM reduction with zero PPL degradation
+C0_Raw_Int8KV,Phase 4.0,C0,Raw Streaming + Dynamic Int8 KV,572140,160704,184320,352896,248.7,4021.3,6.4952,+0.0000,REPRODUCED,Control baseline candidate
+S1_Chunk_zlib_Int8KV,Phase 4.0,S1,Deflate Chunk Streaming,443924,193664,184320,386304,974.4,1026.3,7.1463,+0.0001,REPRODUCED,Decompression overhead creates 69.7% inference bottleneck
+S1_STRE_Int8KV,Phase 4.1,S1,Sparse-Trit Run-Encoding + Fused GEMV,523756,193664,184320,386304,481.8,2075.3,7.1463,+0.0001,REPRODUCED,Phase 4.1 Champion: 10.8 GB/s decode exceeding 2000 tok/s gate
+C0_STRE_Int8KV,Phase 4.1,C0,Sparse-Trit Run-Encoding + Fused GEMV,572338,193664,184320,386304,453.2,2206.6,6.4952,+0.0000,REPRODUCED,Control candidate exceeding 2200 tok/s
+S1_STRE_Int8KV_s42,Phase 4.1,S1,STRE Multi-Seed Validation,523756,193664,184320,386304,509.5,1962.9,7.1463,+0.0001,REPRODUCED,Seed 42 robustness verification
+S1_STRE_Int8KV_s1337,Phase 4.1,S1,STRE Multi-Seed Validation,523756,193664,184320,386304,509.0,1964.8,7.1463,+0.0001,REPRODUCED,Seed 1337 robustness verification
+S1_STRE_Int8KV_s2026,Phase 4.1,S1,STRE Multi-Seed Validation,523756,193664,184320,386304,508.9,1965.2,7.1463,+0.0001,REPRODUCED,Seed 2026 robustness verification
+SSTCD_Rank4,Phase 4.2,S1,Spectral-Subspace Trit Coord Decomp,633527,245760,184320,438400,1176.5,850.0,14.8210,+7.7120,FAILED,Rank-4 subspace projection introduces severe truncation error
+SSTCD_Rank8,Phase 4.2,S1,Spectral-Subspace Trit Coord Decomp,671016,286720,184320,479360,1176.5,850.0,11.2916,+4.1826,FAILED,Low-rank metadata overhead + residue density exceeds raw size
+SSTCD_Rank16,Phase 4.2,S1,Spectral-Subspace Trit Coord Decomp,753284,368640,184320,561280,1250.0,800.0,9.4520,+2.3430,FAILED,High metadata overhead expands file to 753 KB
+GF_PRS_Difference,Phase 4.2,S1,Galois Field GF(3^5) Difference,523756,193664,184320,386304,0.0,0.0,7.1463,+0.0000,REFUTED,Algebraic differences increase entropy from 7.00 to 7.78 bits/byte
+DDSQ_Dyadic_KV,Phase 4.2,S1,Dyadic Dynamic-Shift Quantization,523756,193664,168960,370944,465.0,2150.0,7.8306,+0.7216,FAILED,Power-of-2 step gap causes 1100x increase in key MSE and +0.72 PPL

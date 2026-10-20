@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS / System
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Virtual environments & local packages
+.venv/
+env/
+venv/
+user_site_packages/
+
+# Compiled native binaries & libraries
+*.so
+*.dylib
+*.dll
+*.o
+*.a
+*.exe
+src/kernels/libnative_transformer.dylib
+test_gemv_opt
+
+# Large model checkpoints and serialized containers
+checkpoints/
+*.npz
+*.llstream
+*.llchunk
+*.llstre
+*.lpack
+
+# Datasets
+data/
+data/wikitext-2/
+
+# Temporary and local test outputs
+/tmp/
+.pytest_cache/
+.coverage
+htmlcov/

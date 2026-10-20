@@ -1,0 +1,16 @@
+candidate_id,model,engine_type,stream_level,pack_mode,container_bytes,cold_start_ms,active_weight_ram_bytes,scratchpad_bytes,total_model_ram_bytes,kv_cache_32_bytes,kv_cache_128_bytes,pread_calls_per_tok,streamed_bytes_per_tok,peak_rss_mb,test_ppl,test_ce,prefill_p50_ms,decode_p50_us,throughput_tok_s,exact_match,crc_verified
+C0_Static_2B,C0,static,Static,2-Bit,556955,9.49,680712,0,1343944,163840,655360,0.0,0,392.69,6.4954,1.8711,0.65,162.4,6158.9,True,True
+C0_Static_R3,C0,static,Static,Radix-3,553564,9.02,570140,0,1233372,163840,655360,0.0,0,396.34,6.4954,1.8711,1.15,282.9,3534.6,True,True
+S1_Static_2B,S1,static,Static,2-Bit,439003,5.15,680712,0,1343944,163840,655360,0.0,0,396.50,7.1464,1.9666,0.66,163.0,6133.5,True,True
+S1_Static_R3,S1,static,Static,Radix-3,429020,11.65,570140,0,1233372,163840,655360,0.0,0,396.50,7.1464,1.9666,1.14,281.7,3550.4,True,True
+C0_FileStream_Block_2B,C0,file_stream,Block,2-Bit,681964,1.27,260864,133120,924544,163840,655360,50.0,552960,396.56,6.4954,1.8711,0.79,197.0,5077.1,True,True
+C0_FileStream_Block_R3,C0,file_stream,Block,Radix-3,572140,1.16,234432,106688,898112,163840,655360,50.0,443136,396.56,6.4954,1.8711,1.26,309.9,3226.6,True,True
+S1_FileStream_Block_2B,S1,file_stream,Block,2-Bit,681964,0.96,260864,133120,924544,163840,655360,50.0,552960,396.56,7.1464,1.9666,0.79,196.8,5080.4,True,True
+S1_FileStream_Block_R3,S1,file_stream,Block,Radix-3,572140,1.42,234432,106688,898112,163840,655360,50.0,443136,396.56,7.1464,1.9666,1.26,310.4,3221.8,True,True
+C0_FileStream_Layer_2B,C0,file_stream,Layer,2-Bit,681964,0.13,168704,40960,832384,163840,655360,50.0,552960,397.19,6.4954,1.8711,0.78,194.3,5147.5,True,True
+C0_FileStream_Layer_R3,C0,file_stream,Layer,Radix-3,572140,0.29,160704,32960,824384,163840,655360,50.0,443136,397.19,6.4954,1.8711,1.26,310.6,3220.1,True,True
+S1_FileStream_Layer_2B,S1,file_stream,Layer,2-Bit,681964,0.15,168704,40960,832384,163840,655360,50.0,552960,397.19,7.1464,1.9666,0.81,204.6,4887.2,True,True
+S1_FileStream_Layer_R3,S1,file_stream,Layer,Radix-3,572140,0.14,160704,32960,824384,163840,655360,50.0,443136,397.19,7.1464,1.9666,1.25,309.3,3232.9,True,True
+S1_FileStream_Layer_R3_s42,S1,file_stream,Layer,Radix-3,572140,0.91,160704,32960,824384,163840,655360,50.0,443136,397.19,7.1464,1.9666,1.26,309.0,3236.2,True,True
+S1_FileStream_Layer_R3_s1337,S1,file_stream,Layer,Radix-3,572140,0.83,160704,32960,824384,163840,655360,50.0,443136,397.19,7.1464,1.9666,1.26,308.8,3237.9,True,True
+S1_FileStream_Layer_R3_s2026,S1,file_stream,Layer,Radix-3,572140,1.27,160704,32960,824384,163840,655360,50.0,443136,397.22,7.1464,1.9666,1.26,308.8,3238.1,True,True

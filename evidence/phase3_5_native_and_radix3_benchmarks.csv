@@ -1,0 +1,5 @@
+mode,artifact_bytes,weight_ram_bytes,prefill_p50_ms,prefill_p95_ms,decode_p50_us,decode_p95_us,throughput_tok_s,test_ppl,exact_token_match
+FP16_Reference_MPS,2164373,2476928,3.93,5.50,4065.1,5096.5,246.0,6.3703,True
+ADBO_Unpack_Once_MPS,557187,2476928,3.73,4.37,3989.4,4890.5,250.7,6.4937,True
+ADBO_Native_Packed_2Bit_NEON,557187,680712,0.66,0.71,171.8,183.7,5820.9,6.4937,True
+ADBO_Native_Packed_Radix3_NEON,559867,570140,1.32,2.33,391.8,578.5,2552.6,6.4937,True
