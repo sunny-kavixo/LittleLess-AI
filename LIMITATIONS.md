@@ -15,7 +15,13 @@ This document records scientific limitations rather than treating every experime
 ## Safety and reproducibility
 - Phase 3.8 independent audit found Python pinned-weight retention and pointer ownership risks. It should not be presented as verified true disk streaming.
 - Phase 3.9 reports file-descriptor-based native reads, corruption checks, and create/free tests; independent reruns and native safety tooling remain desirable.
-- A later macOS Python crash was observed during Phase 4.0 activity. Its cause and benchmark integrity are not established by the screenshot alone.
+- Subsequent local crash investigation attributed the macOS Python crash to an ad-hoc `ctypes` call missing the `c_void_p` signature for `free_phase4_model`. Benchmark tasks reportedly exited successfully. This does not rule out other native defects; see [CRASH_ANALYSIS.md](CRASH_ANALYSIS.md).
+
+## Phase 4.0 measured trade-offs (locally reported)
+- Dynamic Int8 KV cache reduced native KV allocation by ~71.9% at T=128, but longer-context scaling and actual whole-process peak RSS are not yet established.
+- Sparse S1 chunk compression reduced container size by ~22.4% but reduced throughput from ~3,243 to ~961 tokens/s.
+- Dense C0 chunk compression offered only ~0.50% total container savings by the table's byte counts, despite a large speed penalty; the report separately states ~0.69%, so this discrepancy needs reconciliation.
+- Perplexity and tokens were reported close/matching for tested configurations; this does not imply no degradation across arbitrary tasks or models.
 
 ## Scale and novelty
 - Current reported results involve a small experimental transformer. No comparable large-language-model superiority has been established.
