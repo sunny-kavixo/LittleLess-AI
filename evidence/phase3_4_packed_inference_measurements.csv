@@ -1,0 +1,4 @@
+mode,artifact_bytes,weight_ram_bytes,peak_rss_mb,prefill_p50_ms,prefill_p95_ms,decode_p50_us,decode_p95_us,tokens_per_sec,test_ppl,max_err_vs_dense
+FP16_Reference_MPS,2164373,2476928,393.0,1.42,1.85,1254.3,1431.1,797.2,6.3703,0.0
+ADBO_Unpack_Once_MPS,557187,2476928,393.0,1.18,1.32,1205.4,1338.1,829.6,6.4937,0.0
+ADBO_Direct_Packed_NEON,557187,680712,393.0,15.83,16.51,15881.9,16137.4,63.0,6.4937,8.91e-03

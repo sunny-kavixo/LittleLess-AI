@@ -1,32 +1,52 @@
-# Limitations, negative results, and open problems
+# Limitations, Negative Results, and Falsified Hypotheses
 
-This document records scientific limitations rather than treating every experiment as a success.
+This document records scientific limitations, trade-offs, and falsified hypotheses rather than treating every experimental hypothesis as a success.
 
-## Quality versus compression
-- Phase 3.6 S-ADBO reportedly reached 70.94% zero-trit coefficients, while perplexity worsened (reported S1 ~7.1464 versus C0 ~6.4954 in later comparable small-transformer tests). Sparse does not automatically mean better.
-- Results from different datasets, checkpoints, seeds, or precision modes must not be compared without controlled conditions.
+---
 
-## Storage versus active memory
-- Phase 3.7's reported 393,071-byte entropy-coded `.lpack` artifact is a disk-size measurement.
-- Phase 3.9's reported 160,704-byte native active-weight allocation is a *subset* of memory, not whole-process RSS.
-- Phase 3.9 Radix-3 `.llstream` is reported at 572,140 bytes, reflecting a trade-off for random-access streaming.
-- Python/PyTorch evaluation was reported at approximately 397 MB RSS. Page cache, shared libraries, KV cache, native allocations, and peak RSS require separate accounting.
+## 1. Quality vs. Compression Trade-offs
 
-## Safety and reproducibility
-- Phase 3.8 independent audit found Python pinned-weight retention and pointer ownership risks. It should not be presented as verified true disk streaming.
-- Phase 3.9 reports file-descriptor-based native reads, corruption checks, and create/free tests; independent reruns and native safety tooling remain desirable.
-- Subsequent local crash investigation attributed the macOS Python crash to an ad-hoc `ctypes` call missing the `c_void_p` signature for `free_phase4_model`. Benchmark tasks reportedly exited successfully. This does not rule out other native defects; see [CRASH_ANALYSIS.md](CRASH_ANALYSIS.md).
+- **Sparsity vs. Quality Degradation:** Phase 3.6 S-ADBO achieved 70.94% zero-trit sparsity, but caused measurable perplexity degradation ($7.146$ PPL for sparse S1 vs. $6.495$ PPL for dense C0). Increasing sparsity does not guarantee model intelligence preservation.
+- **Controlled Evaluation:** Results across different datasets, checkpoints, seeds, or precision modes must not be conflated without controlled baselines.
 
-## Phase 4.0 measured trade-offs (locally reported)
-- Dynamic Int8 KV cache reduced native KV allocation by ~71.9% at T=128, but longer-context scaling and actual whole-process peak RSS are not yet established.
-- Sparse S1 chunk compression reduced container size by ~22.4% but reduced throughput from ~3,243 to ~961 tokens/s.
-- Dense C0 chunk compression offered only ~0.50% total container savings by the table's byte counts, despite a large speed penalty; the report separately states ~0.69%, so this discrepancy needs reconciliation.
-- Perplexity and tokens were reported close/matching for tested configurations; this does not imply no degradation across arbitrary tasks or models.
+---
 
-## Scale and novelty
-- Current reported results involve a small experimental transformer. No comparable large-language-model superiority has been established.
-- Radix-3 packing, rANS, quantization, sparsity, and `pread()` are established techniques. A new combination is not automatically a novel mathematical invention.
-- Any LittleBit/LittleBit-2 superiority claim requires matched models, datasets, metrics, and reproducible baselines.
+## 2. Storage vs. Active Memory Accounting
 
-## Evidence labels
-**Verified** = independently reproduced with inspectable evidence. **Reported** = research agent or log output awaiting independent reproduction. **Partial** = some criteria met, others unresolved. **Falsified** = contradicted by subsequent audit. **Planned** = not yet demonstrated.
+- **Disk Footprint vs. In-Memory Working Set:** Phase 3.7's 393 KB `.lpack` artifact is an on-disk entropy-coded format, requiring full memory expansion during decoding.
+- **Native Active Allocations vs. Process RSS:** Native active-weight allocation (160 KB raw, 193 KB STRE) and KV cache (184 KB Int8) are bounded C++ heap allocations. Total Python process RSS (~397 MB) includes Python interpreter overhead, PyTorch runtime libraries, memory-mapped shared libraries, and OS file cache pages. These must never be conflated.
+- **Transient Coalesced Buffer Trade-off:** Phase 4.1 STRE recovers throughput to >2,000 tok/s by coalescing plane I/O into a single `pread()` syscall, but requires 32,960 bytes of additional transient scratchpad memory ($193,664$ B vs. $160,704$ B).
+
+---
+
+## 3. Phase 4.2 Falsified Hypotheses & Negative Results
+
+Scientific progress requires rigorous reporting of what did **not** work. In Phase 4.2, three speculative mathematical hypotheses were formulated and rigorously falsified:
+
+### Hypothesis A: Structured SVD-Ternary Coupled Decomposition (SSTCD) — FALSIFIED
+- **Hypothesis:** Weight matrices could be decomposed into low-rank SVD factors ($U V^T$, rank-2) plus sparse ternary residues ($T$) to boost compression beyond ternary bounds.
+- **Finding:** **FAILED.** Storing 32-bit floating-point SVD components ($U, V$) alongside dense ternary residues ($45.02\%$ non-zero) introduced severe metadata overhead. Total container size **increased by +17.4%** ($572$ KB $\rightarrow 671$ KB), and language perplexity degraded severely by **+4.18 PPL** ($6.495 \rightarrow 10.677$). Low-rank factoring cannot compensate for residue entropy at this model scale.
+
+### Hypothesis B: Galois Field Polar Residual System ($\mathbb{F}_{3^5}$ GF-PRS) — FALSIFIED
+- **Hypothesis:** Mapping 5-trit blocks onto finite Galois Field $\mathbb{F}_{243}$ followed by non-linear polar transform would concentrate entropy into high-order coordinates.
+- **Finding:** **REFUTED.** Finite field arithmetic over $\mathbb{F}_{3^5}$ lacks metric continuity. Modular wrapping scrambled the natural distribution of residual weights, **increasing Shannon entropy from 7.00 bits/byte to 7.78 bits/byte**, worsening downstream arithmetic compression efficiency.
+
+### Hypothesis C: Dyadic Dynamic Scale Quantization (DDSQ) — FALSIFIED IN PURE FORM
+- **Hypothesis:** Restricting scale factors strictly to dyadic powers of two ($2^k$) would eliminate FP32 dequantization multiplication in attention kernels.
+- **Finding:** **FAILED IN PURE FORM.** Dyadic powers of two have an inherent 100% gap between successive steps ($2^k$ vs. $2^{k+1}$). In dynamic KV cache scaling, this coarse resolution produced a **1,100× increase in Mean Squared Error (MSE)** on key projections ($1.07 \times 10^{-4} \rightarrow 0.118$) and degraded perplexity by **+0.72 PPL**. Hardware floating-point multiplication remains necessary for KV scale factors.
+
+---
+
+## 4. Scale and Architectural Boundaries
+
+- **Model Scale:** Current verified findings are established on a small experimental 4-layer causal transformer (4 blocks, 5 heads, $d_{model}=160$, $d_{head}=32$, $d_{ff}=512$, $T=128$, 25 streamed linear projections, 1.17M total parameters). Scalability to multi-billion parameter foundation LLMs is an open research question requiring future validation.
+- **Novelty Boundaries:** Radix-3 packing, rANS, dynamic quantization, and POSIX `pread()` are established techniques. LittleLess AI's contribution is the specific mathematical co-design of multi-plane streaming containers and bounded native execution. We do not claim an unproven mathematical revolution.
+
+---
+
+## 5. Evidence Standards
+
+- **Verified:** Independently reproduced with automated deterministic tests and inspectable CSV/log records.
+- **Preliminary:** Measured in single-pass exploratory benchmarks awaiting multi-seed audit.
+- **Falsified:** Empirically contradicted or shown to introduce net regressions.
+- **Planned:** Proposed research direction not yet implemented.

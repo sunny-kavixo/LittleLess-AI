@@ -1,0 +1,14 @@
+candidate_name,test_ce_nats,test_perplexity,ppl_gap_pct,artifact_bytes,compression_ratio,prefill_p50_ms,decode_p50_us,throughput_tok_per_sec,peak_rss_ram_mb
+FP16_Reference,1.8516,6.37,0.0,2169343,1.0,1.6,1253.5,797.8,402.2
+Degraded_Negative_Control,51.8515,3.302390567867766e+22,5.1840571644900675e+23,175432,12.37,7.63,7663.3,130.5,418.7
+Full_Ternary_Global,2.4242,11.293,77.28,268379,8.08,15.53,15640.5,63.9,418.7
+Full_Ternary_Per_Channel,2.3783,10.787,69.33,278243,7.8,4.22,4207.4,237.7,418.7
+Global_Dual_Basis_All,2.0624,7.865,23.47,515219,4.21,34.56,29124.6,34.3,418.7
+PC_Dual_Basis_All,2.0107,7.468,17.24,535412,4.05,6.86,6836.6,146.3,418.7
+Sens_Quant_Attn_Only,1.9245,6.852,7.56,1603735,1.35,4.26,4256.0,235.0,418.7
+Sens_Quant_MLP_Only,1.8753,6.523,2.4,1244689,1.74,3.81,3825.1,261.4,418.7
+Sens_Quant_Emb_Head_Only,1.9322,6.904,8.39,2025696,1.07,2.16,1981.0,504.8,418.7
+Adaptive_Transformer_DBQ_V1,1.9538,7.056,10.76,819152,2.65,5.42,5281.9,189.3,418.7
+Adaptive_Transformer_DBQ_V2,1.9418,6.971,9.44,1101128,1.97,4.04,4051.1,246.8,418.7
+Ternary_Sparse_Residual_3pct,2.2208,9.215,44.65,398105,5.45,19.18,17646.4,56.7,418.7
+Ternary_Low_Rank_r4,2.3734,10.734,68.5,370004,5.86,92.58,93317.1,10.7,418.7

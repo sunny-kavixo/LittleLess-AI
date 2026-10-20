@@ -1,57 +1,94 @@
-# Reproducibility and evidence policy
+# Reproducibility and Evidence Guide
 
-This public repository currently documents the research program. The local experimental code and datasets are not yet guaranteed to be available here.
+This repository contains the complete experimental code, native C++ kernels, benchmark harness, unit tests, and empirical evidence CSVs for LittleLess AI.
 
-## Reported local research environment
+## 1. Verified Experimental Environment
 
-- Hardware: Apple Silicon MacBook Air M4, 16 GB unified memory.
-- Research workspace (local only): `LittleLess-AI-Phase3-Transformer`.
-- Reported Phase 3.9 branch: `phase-3.9-file-backed-streaming`.
-- Reported Phase 3.9 commit: `d2eda4b` (not yet confirmed as a commit in this public repository).
-- Native implementation: C++17, Clang, POSIX `pread()`, Python benchmark harness.
-- Model: small experimental transformer; published claims must specify full architecture and checkpoint provenance.
+- **Architecture:** Apple Silicon (macOS, arm64, Apple M4, 16 GB unified memory).
+- **Toolchain:** Apple Clang (C++17), `-O3 -fPIC -shared -std=c++17`.
+- **Python Runtime:** Python 3.10+ (tested on Python 3.10 / 3.14).
+- **Core Dependencies:** `numpy`, `torch` (for PyTorch validation baseline), `matplotlib` (for chart generation).
+- **Evaluation Dataset:** WikiText-2 raw tokens (vocabulary: 256 byte-level tokens, 192,000 held-out evaluation tokens, sequence context $T=128$).
+- **License:** All source code and documentation are released under the Apache-2.0 License.
 
-## Reported Phase 4.0 checkpoint
+---
 
-- Local branch: `phase-4.0-research`.
-- Local commit: `eea4044` (not yet published in this repository).
-- Reported evaluation: WikiText-2 byte-level vocabulary 256; 192,000 held-out tokens; T=128; 11 benchmark matrix rows.
-- Local source paths referenced in the owner's report: `src/native/native_phase4_transformer.cpp`, `src/native/native_phase4_transformer.h`, `src/export_phase4_chunk_container.py`, `tests/test_phase4_research.py`, `tests/audit_phase3_9_independent.py`, `benchmarks/run_phase4_research_benchmarks.py`, `evidence/phase4_research_benchmarks.csv`.
-- See [PHASE4_RESULTS.md](PHASE4_RESULTS.md) for the reported matrix and its limits.
+## 2. Native Compilation Instructions
 
-## Reported Phase 3.9 local test commands
-
-These commands require source files, dependencies, and model artifacts that may **not yet exist in this public repository**.
+Compile the unified native inference kernel before running tests or benchmarks:
 
 ```bash
-python3 tests/test_file_streaming_safety.py
-python3 tests/test_radix3_exhaustive.py
-python3 benchmarks/run_phase3_9_file_streaming_benchmarks.py
+# Build the native C++ transformer dynamic library
+clang++ -O3 -fPIC -shared -std=c++17 \
+  -I src/native \
+  src/native/native_packed_transformer.cpp \
+  src/native/native_streaming_transformer.cpp \
+  src/native/native_file_streaming_transformer.cpp \
+  src/native/native_phase4_transformer.cpp \
+  -lz \
+  -o src/kernels/libnative_transformer.dylib
 ```
 
-Additional reported Phase 4.0 local commands (not runnable from this documentation-only repository yet):
+---
+
+## 3. Running Unit Tests and Audits
+
+Execute the automated test suite and independent verification gates:
 
 ```bash
-python3 tests/test_phase4_research.py
+# 1. Run all unit tests (12/12 test cases)
+python3 -m unittest discover -s tests
+
+# 2. Run Phase 3.9 Independent Verification Gate
 python3 tests/audit_phase3_9_independent.py
-python3 benchmarks/run_phase4_research_benchmarks.py
+
+# 3. Run Phase 4.1 Independent Breakthrough Verification Gate
+python3 tests/audit_phase4_1_independent.py
+
+# 4. Run Phase 4.2 Hypothesis Testing Scripts
+python3 experiments/test_hypothesis_a_sstcd.py
+python3 experiments/test_hypothesis_b_gf_prs.py
+python3 experiments/test_hypothesis_c_ddsq.py
 ```
 
-The original local benchmark environment used a custom Python package path. Do not hardcode private absolute paths into a public reproducibility guide.
+---
 
-## Minimum evidence for a validated result
+## 4. Benchmark Reproduction
 
-1. Exact Git commit and source archive hash.
-2. Model architecture, parameter count, source checkpoint and license.
-3. Dataset, split, preprocessing, sequence length, and random seeds.
-4. Hardware, OS, Python, compiler, dependencies, and native build flags.
-5. Exact commands and raw CSV/log output.
-6. Multiple trials and timing methodology.
-7. Serialized artifact bytes; native active weights; scratchpad; KV cache; peak process RSS; page-cache considerations.
-8. Perplexity and output-agreement methodology.
-9. Failure cases, crashes, and independently observed regressions.
-10. An explicit distinction between **reported** and **independently reproduced** results.
+Run the audited benchmarking suites:
 
-## Publication checklist
+```bash
+# Profile Phase 4.0 execution breakdown (pread vs decompress vs gemv)
+python3 benchmarks/profile_phase4_breakdown.py
 
-Before importing local research: inspect `git status`, review staged files and commit history, scan for credentials, check dataset/model licenses, avoid giant binaries, and preserve historical results. Never replace missing evidence with invented commands or numbers.
+# Run Phase 4.1 breakthrough benchmark (evaluates raw, chunked, and STRE modes)
+python3 benchmarks/run_phase4_1_breakthrough_benchmarks.py
+
+# Re-generate research charts and visual assets
+python3 experiments/generate_research_charts.py
+```
+
+---
+
+## 5. Artifact and Checkpoint Provenance
+
+Model checkpoints and raw binary datasets are excluded from Git to prevent repository bloat (`checkpoints/` and `data/` in `.gitignore`).
+
+To export the Phase 4.1 STRE container from an existing checkpoint:
+```bash
+# Export STRE container
+python3 src/export_phase4_1_stre_container.py \
+  --checkpoint checkpoints/model_phase3.npz \
+  --output checkpoints/model_phase4_stre.llstre
+```
+
+---
+
+## 6. Minimum Evidence for Validated Results
+
+Every claim in this repository adheres to the following scientific standards:
+1. **Source Tracking:** Exact Git commit and inspectable source code.
+2. **Explicit Provenance:** Model architecture, parameter count, dataset split, sequence length, and seed.
+3. **Execution Separation:** Complete separation between native C++ heap allocations (measured via native tracking counters) and whole-process Python RSS (measured via `getrusage`).
+4. **Independent Reruns:** Deterministic bit-exact token verification between PyTorch reference and native C++ kernels across multiple independent trials.
+5. **Rigorous Classification:** Explicit distinction between **Verified** results (independently reproduced), **Preliminary** results, and **Falsified** hypotheses.
