@@ -28,8 +28,8 @@ The long-term goal is to develop genuinely original, measurable compression and 
 | Phase 3.6 | S-ADBO sparsity | Reported 70.94% zero-trit coefficients, but worse perplexity; quality/storage trade-off |
 | Phase 3.7 | Entropy-coded `.lpack` representation | Reported 393,071-byte serialized artifact; disk size is not active RAM |
 | Phase 3.8 | Native JIT weight streaming | Independent audit identified retained Python weight buffers, incomplete memory accounting, and pointer-lifetime risk |
-| Phase 3.9 | Native file-backed `.llstream` execution | Reported `pread()` streaming and 160,704-byte native active-weight allocation; independent end-to-end audit remains important |
-| Phase 4.0 | Compressed streaming, KV-cache efficiency, and new mathematical hypotheses | In progress; do not treat unverified benchmark runs as validated |
+| Phase 3.9 | Native file-backed `.llstream` execution | Local independent-audit script reported PASS, including FD invalidation, CRC, lifecycle, and output checks; external reproduction pending |
+| Phase 4.0 | Chunk-streamed entropy coding and dynamic Int8 KV cache | Local benchmark completed; 11 reported rows and crash diagnosis documented; public reproduction pending |
 
 These are **research-log-reported** results, not independently certified claims. Different configurations and evaluation conditions must not be compared as if they were identical.
 
@@ -47,6 +47,16 @@ These are **research-log-reported** results, not independently certified claims.
 
 Source: local Phase 3.9 research report, pending publication of its complete reproducibility artifacts. No broad large-model or real-world speedup is claimed.
 
+## Latest Phase 4.0 findings (local research report)
+
+- **Dynamic Int8 KV cache:** 655,360 → 184,320 bytes at context 128 (**71.9% lower KV allocation**).
+- **Native model heap:** 824,384 → 353,344 bytes for the raw-stream Int8 variant (**57.1% lower**, not process RSS).
+- **Sparse S1 chunk container:** 572,140 → 443,924 bytes (**22.4% smaller**) at the cost of decode speed falling from ~3,243 to ~961 tokens/sec.
+- **Dense C0 chunk compression:** marginal disk benefit with a substantial speed penalty; this hypothesis was not useful for the dense candidate.
+- **Crash clarification:** a temporary Python `ctypes` diagnostic reportedly used an incorrect pointer signature; benchmark jobs themselves were reported to exit successfully. See [CRASH_ANALYSIS.md](CRASH_ANALYSIS.md).
+
+These figures are **reported from local experiments**, not independently reproduced from this public repository. Read [PHASE4_RESULTS.md](PHASE4_RESULTS.md) and [RESULTS.md](RESULTS.md) before quoting them.
+
 ## What has not been solved
 
 - A new compression theory with demonstrated superiority over established baselines has **not** been proven.
@@ -55,9 +65,9 @@ Source: local Phase 3.9 research report, pending publication of its complete rep
 - Sparsity improvements can worsen perplexity.
 - KV-cache cost grows with sequence length; it may dominate active model-weight allocation.
 - Small-model tokens/second cannot be extrapolated to large language models.
-- A Python/native crash during later experiments requires diagnosis before claiming those experiments passed.
+- A separate Python/native crash was traced locally to an ad-hoc `ctypes` binding mistake; typed FFI wrappers and broader sanitizer tests remain pending.
 
-See [LIMITATIONS.md](LIMITATIONS.md), [RESEARCH_ROADMAP.md](RESEARCH_ROADMAP.md), and [REPRODUCIBILITY.md](REPRODUCIBILITY.md).
+See [RESULTS.md](RESULTS.md), [PHASE4_RESULTS.md](PHASE4_RESULTS.md), [LIMITATIONS.md](LIMITATIONS.md), [RESEARCH_ROADMAP.md](RESEARCH_ROADMAP.md), and [REPRODUCIBILITY.md](REPRODUCIBILITY.md).
 
 ## Research standards
 
