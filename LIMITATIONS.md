@@ -39,7 +39,7 @@ Scientific progress requires rigorous reporting of what did **not** work. In Pha
 
 ## 4. Scale and Architectural Boundaries
 
-- **Model Scale:** Current verified findings are established on a small experimental 6-layer causal transformer. Scalability to multi-billion parameter foundation LLMs is an open research question requiring future validation.
+- **Model Scale:** Current verified findings are established on a small experimental 4-layer causal transformer (4 blocks, 5 heads, $d_{model}=160$, $d_{head}=32$, $d_{ff}=512$, $T=128$, 25 streamed linear projections, 1.17M total parameters). Scalability to multi-billion parameter foundation LLMs is an open research question requiring future validation.
 - **Novelty Boundaries:** Radix-3 packing, rANS, dynamic quantization, and POSIX `pread()` are established techniques. LittleLess AI's contribution is the specific mathematical co-design of multi-plane streaming containers and bounded native execution. We do not claim an unproven mathematical revolution.
 
 ---
