@@ -11,6 +11,14 @@ This public repository currently documents the research program. The local exper
 - Native implementation: C++17, Clang, POSIX `pread()`, Python benchmark harness.
 - Model: small experimental transformer; published claims must specify full architecture and checkpoint provenance.
 
+## Reported Phase 4.0 checkpoint
+
+- Local branch: `phase-4.0-research`.
+- Local commit: `eea4044` (not yet published in this repository).
+- Reported evaluation: WikiText-2 byte-level vocabulary 256; 192,000 held-out tokens; T=128; 11 benchmark matrix rows.
+- Local source paths referenced in the owner's report: `src/native/native_phase4_transformer.cpp`, `src/native/native_phase4_transformer.h`, `src/export_phase4_chunk_container.py`, `tests/test_phase4_research.py`, `tests/audit_phase3_9_independent.py`, `benchmarks/run_phase4_research_benchmarks.py`, `evidence/phase4_research_benchmarks.csv`.
+- See [PHASE4_RESULTS.md](PHASE4_RESULTS.md) for the reported matrix and its limits.
+
 ## Reported Phase 3.9 local test commands
 
 These commands require source files, dependencies, and model artifacts that may **not yet exist in this public repository**.
@@ -19,6 +27,14 @@ These commands require source files, dependencies, and model artifacts that may 
 python3 tests/test_file_streaming_safety.py
 python3 tests/test_radix3_exhaustive.py
 python3 benchmarks/run_phase3_9_file_streaming_benchmarks.py
+```
+
+Additional reported Phase 4.0 local commands (not runnable from this documentation-only repository yet):
+
+```bash
+python3 tests/test_phase4_research.py
+python3 tests/audit_phase3_9_independent.py
+python3 benchmarks/run_phase4_research_benchmarks.py
 ```
 
 The original local benchmark environment used a custom Python package path. Do not hardcode private absolute paths into a public reproducibility guide.
