@@ -1,15 +1,15 @@
 # LittleLess AI: Extreme Weight Compression & Real-Time File-Backed Streaming Engine
 
-[![Research Status](https://img.shields.io/badge/Research%20Status-Phase%204.2%20Audited-success.svg)](#benchmarks--empirical-evidence)
+[![Scope](https://img.shields.io/badge/Scope-toy--scale%20research-orange.svg)](#scope-and-limits)
 [![Hardware Target](https://img.shields.io/badge/Hardware-Apple%20Silicon%20M4%20(arm64)-blue.svg)](#system-architecture)
-[![Unit Tests](https://img.shields.io/badge/Unit%20Tests-12%2F12%20Passing-brightgreen.svg)](#reproducibility--quickstart)
-[![Perplexity Degradation](https://img.shields.io/badge/WikiText--2%20PPL%20Delta-0.0000%20(Zero)-success.svg)](#benchmarks--empirical-evidence)
-[![Memory Footprint](https://img.shields.io/badge/Model%20Heap%20RAM-386%20KB-orange.svg)](#native-memory-footprint)
+[![Replication](https://img.shields.io/badge/External%20replication-none%20yet-lightgrey.svg)](#scope-and-limits)
 
 **Principal Researcher & Project Lead:** Putluru Sandeep ([@sunny-kavixo](https://github.com/sunny-kavixo))  
 **Public Repository:** [https://github.com/sunny-kavixo/LittleLess-AI](https://github.com/sunny-kavixo/LittleLess-AI)  
 **Primary Research Platform:** Apple Silicon M4 (16GB Unified Memory, macOS 15.x Darwin arm64)  
-**Status:** Active, peer-audited empirical research — complete source code, native C++ streaming kernels, test suites, and raw evidence published.
+**Status:** Active independent research. Source code, native C++ streaming kernels, tests, benchmark scripts and raw CSV results are public. Results are self-reported and have **not** been externally replicated.
+
+> **Scope and limits.** Everything below was measured on a small four-block, byte-level transformer (about 0.5 MB packed) on one Apple Silicon M4 machine. Nothing here demonstrates compression or speed on 7B+ class models; that is the stated goal, not a result. The public checkout omits the model checkpoints, the WikiText-2 data and the compiled library, so the performance figures cannot be reproduced from a fresh clone yet. See [`docs/FAILURES_AND_LIMITATIONS.md`](docs/FAILURES_AND_LIMITATIONS.md) and [`LIMITATIONS.md`](LIMITATIONS.md).
 
 ---
 
@@ -34,9 +34,9 @@ Established methods, including LittleBit/LittleBit-2, BitNet b1.58, and conventi
 
 ---
 
-## Technical Mechanisms & Breakthroughs
+## Technical Mechanisms
 
-1. **Adaptive Dual-Basis Optimization (ADBO):** Decomposes weight matrices $W \in \mathbb{R}^{M \times N}$ into dual ternary planes $T_1, T_2 \in \{-1, 0, +1\}$ and per-channel FP32 scales ($s_1, s_2$). This spans **9 discrete quantization levels** using only $2 \times \log_2(3) \approx 3.17$ bits/weight with zero perplexity degradation.
+1. **Adaptive Dual-Basis Optimization (ADBO):** Decomposes weight matrices $W \in \mathbb{R}^{M \times N}$ into dual ternary planes $T_1, T_2 \in \{-1, 0, +1\}$ and per-channel FP32 scales ($s_1, s_2$). This spans **9 discrete quantization levels** using only $2 \times \log_2(3) \approx 3.17$ bits/weight on the toy model. Perplexity for the same model with FP32 weights is not published in this table, so this repository does not claim zero degradation.
 2. **Dense Radix-3 Base-3 Packing:** Groups 5 trits per 8-bit byte ($3^5 = 243 \le 256$), mathematically bounding valid symbols to $[0, 242]$ and leaving bytes $[243, 255]$ unmapped.
 3. **Seekable Sparse-Trit Run-Encoding (STRE):** Leverages unmapped escape bytes to encode runs of zero-trit byte 121 (`0x79`), delivering **10.8 GB/sec** streaming decompression (**7.7× faster than zlib**).
 4. **Coalesced True File-Backed Streaming (`pread`):** Reads packed weights Just-In-Time directly from storage into a reusable **65 KB transient scratchpad**, completely unpinning model weights from host RAM.
@@ -47,12 +47,12 @@ Established methods, including LittleBit/LittleBit-2, BitNet b1.58, and conventi
 
 ## Benchmarks & Empirical Evidence
 
-All benchmarks are independently audited and reproduced over 35 independent trials (1,120 generated tokens per candidate) on the WikiText-2 test set (192,000 tokens):
+Repository-reported benchmarks: 35 trials (1,120 generated tokens per candidate) on the WikiText-2 test set (192,000 tokens), run by the author on one machine. Not externally replicated; checkpoints and data are not included in the repo.
 
 | Candidate ID | Phase | Container Format | KV Mode | On-Disk Bytes | Active Weight RAM | KV-Cache RAM | Total Heap RAM | Decode Latency | Throughput | WikiText-2 PPL | Output Correctness | Scientific Classification |
 | :--- | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
-| **`S1_STRE_Int8KV`** | **4.1** | **STRE (`.llstre`)** | **Int8** | **523,756 B** | **193,664 B** | **184,320 B** | **386,304 B** | **481.8 $\mu$s** | **2,075.3 tok/s**| **7.1463** | **100% Bit-Exact** | **Pareto Champion** |
-| `C0_STRE_Int8KV` | 4.1 | STRE (`.llstre`) | Int8 | 572,338 B | 193,664 B | 184,320 B | 386,304 B | 453.2 $\mu$s | 2,206.6 tok/s | 6.4952 | 100% Bit-Exact | Control Champion |
+| **`S1_STRE_Int8KV`** | **4.1** | **STRE (`.llstre`)** | **Int8** | **523,756 B** | **193,664 B** | **184,320 B** | **386,304 B** | **481.8 $\mu$s** | **2,075.3 tok/s**| **7.1463** | **100% Bit-Exact** | **Best measured (this repo)** |
+| `C0_STRE_Int8KV` | 4.1 | STRE (`.llstre`) | Int8 | 572,338 B | 193,664 B | 184,320 B | 386,304 B | 453.2 $\mu$s | 2,206.6 tok/s | 6.4952 | 100% Bit-Exact | Control (best of C0) |
 | `S1_Raw_Int8KV` | 4.0 | Raw (`.llstream`) | Int8 | 572,140 B | 160,704 B | 184,320 B | 352,896 B | 246.7 $\mu$s | 4,052.8 tok/s | 7.1463 | 100% Bit-Exact | Speed Baseline |
 | `C0_Raw_Int8KV` | 4.0 | Raw (`.llstream`) | Int8 | 572,140 B | 160,704 B | 184,320 B | 352,896 B | 248.7 $\mu$s | 4,021.3 tok/s | 6.4952 | 100% Bit-Exact | Speed Baseline |
 | `S1_Raw_FP32KV` | 3.9 | Raw (`.llstream`) | FP32 | 572,140 B | 160,704 B | 655,360 B | 823,936 B | 245.4 $\mu$s | 4,074.7 tok/s | 7.1462 | 100% Bit-Exact | Phase 3.9 Baseline |
@@ -72,7 +72,7 @@ Raw evidence CSVs: [`evidence/phase4_2_discovery_benchmarks.csv`](evidence/phase
 
 ### Storage vs Throughput Pareto Trade-Off
 ![Storage vs Throughput](docs/assets/storage_vs_throughput.png)
-*Figure 1: Pareto frontier on Apple Silicon M4. STRE (green star) delivers 2,075 tok/s at 523 KB container size, breaking through the 2,000 tok/s target gate.*
+*Figure 1: Pareto frontier on Apple Silicon M4. STRE (green star) delivers 2,075 tok/s at 523 KB container size, crossing the project's own 2,000 tok/s target.*
 
 ### Native C++ Model Heap RAM Footprint
 ![Memory Breakdown](docs/assets/memory_breakdown.png)
@@ -144,7 +144,7 @@ sequenceDiagram
     Engine->>Kernel: direct_radix3_gemv(p1, p2)
     Kernel->>KV: Update Int8 KV Cache (184 KB)
 
-    Note over Engine, Disk: STRE COALESCED STREAMING (.llstre) - Phase 4.1 Champion
+    Note over Engine, Disk: STRE COALESCED STREAMING (.llstre) - Phase 4.1 best
     Engine->>Disk: Coalesced pread(p1+p2 comp, ~10.4 KB) [1 Syscall!]
     Engine->>Decomp: fast_stre_decompress(p1) [10.8 GB/s, 0 malloc]
     Engine->>Decomp: fast_stre_decompress(p2) [10.8 GB/s, 0 malloc]
@@ -156,7 +156,7 @@ sequenceDiagram
 
 ## Research Decision Tree & Falsification Ledger
 
-In adherence to strict scientific rigor, LittleLess AI publishes both breakthrough successes and empirical failures:
+In adherence to strict scientific rigor, LittleLess AI publishes both successes and empirical failures:
 
 ```mermaid
 graph TD
@@ -167,7 +167,7 @@ graph TD
     D -->|Bottleneck| D1[50 Heap Allocs/Tok: 981 tok/s - 70.6% overhead]
     D -->|Success| D2[Dynamic Int8 KV Cache: -71.88% RAM, 0 PPL loss]
 
-    D1 --> E[Phase 4.1: Breakthrough Investigations]
+    D1 --> E[Phase 4.1: Investigations]
     E --> E1[Exp A: inflateReset + Coalesced I/O]
     E1 -->|Partial| E1_Res[1,026 tok/s - Bounded by DEFLATE complexity]
     
@@ -175,7 +175,7 @@ graph TD
     E2 -->|Success| E2_Res[10.8 GB/s Decompression, 524 KB, 1,827 tok/s]
 
     E --> E3[Exp C: Fused Branchless GEMV]
-    E2_Res & E3 -->|Target Passed!| F[Phase 4.1 Champion: 2,029.6 tok/s on S1, 2,191.1 tok/s on C0]
+    E2_Res & E3 -->|Target Passed!| F[Phase 4.1 best: 2,029.6 tok/s on S1, 2,191.1 tok/s on C0]
 
     F --> G[Phase 4.2: Sub-380KB Discovery Hypotheses]
     G --> H1[Hypothesis A: SSTCD Truncated SVD]
@@ -214,19 +214,19 @@ clang++ -O3 -std=c++17 -shared -fPIC -lz \
   -o src/kernels/libnative_transformer.dylib
 ```
 
-### 2. Run Complete Unit Test Suite (12 Tests)
+### 2. Run the unit tests
 ```bash
 python3 -m unittest discover -s tests
-# Expected Output: Ran 12 tests in ~0.08s -> OK
+# Run it locally to see the current result; there is no CI yet
 ```
 
-### 3. Run Independent Audit Verification
+### 3. Run the self-audit script
 ```bash
 python3 tests/audit_phase4_1_independent.py
-# Validates file sizes, heap allocations, and token determinism
+# Validates file sizes, heap allocations, and token determinism (author-written; not an external audit)
 ```
 
-### 4. Reproduce End-to-End Breakthrough Benchmarks
+### 4. Run the benchmarks (requires checkpoints and data, which are not in this repo)
 ```bash
 python3 benchmarks/run_phase4_1_breakthrough_benchmarks.py
 ```
@@ -240,7 +240,7 @@ python3 benchmarks/run_phase4_1_breakthrough_benchmarks.py
 - [**Research Timeline**](docs/RESEARCH_TIMELINE.md): Chronological milestone progression across Phases 3.x, 4.0, 4.1, and 4.2.
 - [**Experimental Ledger**](docs/EXPERIMENTS.md): Detailed ledger of all tested candidates, configurations, and measured metrics.
 - [**Failures & Limitations**](docs/FAILURES_AND_LIMITATIONS.md): Documented negative results, falsified hypotheses, and system boundaries.
-- [**Reproducibility Guide**](docs/REPRODUCIBILITY.md): Step-by-step instructions for zero-omission replication.
+- [**Reproducibility Guide**](docs/REPRODUCIBILITY.md): Replication steps, including what the public checkout omits.
 - [**Research Roadmap**](docs/ROADMAP.md): Phase 5.0 plans for fractional dyadic scaling ($m \cdot 2^{-e}$) and scaling to 7B+ LLMs.
 - [**Benchmark Results**](docs/RESULTS.md): Detailed tables and links to raw CSV evidence.
 - [**Crash Analysis**](CRASH_ANALYSIS.md): Diagnostic post-mortem of the Phase 4.0 macOS ctypes SIGSEGV.
