@@ -1,0 +1,35 @@
+{
+  "status": "PASS_RUN",
+  "generated_tokens": 2,
+  "sampled_peak_process_rss_mib": 8212.27,
+  "load_seconds": 136.956,
+  "generation_seconds": 274.514,
+  "tokens_per_second": 0.007285593536252556,
+  "rows": [
+    {
+      "step": 0,
+      "token_id": 362,
+      "seconds": 147.83963463700002,
+      "vocab_size": 152064,
+      "all_finite": true
+    },
+    {
+      "step": 1,
+      "token_id": 9155,
+      "seconds": 126.67471893600032,
+      "vocab_size": 152064,
+      "all_finite": true
+    }
+  ],
+  "prompt": "Explain why a smaller resident memory footprint can increase inference latency.",
+  "decoded_text": "Explain why a smaller resident memory footprint can increase inference latency. A smaller",
+  "kv_cache": true,
+  "cpu_budget_gib": 4.5,
+  "limitations": [
+    "Not a compression algorithm",
+    "RSS excludes file-system page cache / total host usage",
+    "No full-model baseline parity checked",
+    "May need extra RAM beyond CPU allocation",
+    "Sampling may miss spikes"
+  ]
+}

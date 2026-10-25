@@ -1,0 +1,20 @@
+{
+  "status": "IN_PROGRESS",
+  "rows": [
+    {
+      "step": 0,
+      "token_id": 362,
+      "seconds": 147.83963463700002,
+      "vocab_size": 152064,
+      "all_finite": true
+    },
+    {
+      "step": 1,
+      "token_id": 9155,
+      "seconds": 126.67471893600032,
+      "vocab_size": 152064,
+      "all_finite": true
+    }
+  ],
+  "sampled_peak_rss_mib": 8212.27
+}
