@@ -1,0 +1,10 @@
+{
+  "time_utc": "2026-10-25T05:29:47.952808+00:00",
+  "checkpoint": "/content/LittleLess_14B_results/checkpoint",
+  "shards_found": 8,
+  "budget_gib": 4.5,
+  "kv_cache": true,
+  "tokens_requested": 2,
+  "mode": "transformers_accelerate_disk_offload",
+  "free_disk_gib_before": 24.19
+}
